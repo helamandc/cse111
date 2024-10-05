@@ -1,4 +1,4 @@
-from water_flow import water_column_height, pressure_gain_from_water_height, pressure_loss_from_pipe
+from water_flow import water_column_height, pressure_gain_from_water_height, pressure_loss_from_pipe, pressure_loss_from_fittings, reynolds_number, pressure_loss_from_pipe_reduction
 from pytest import approx
 import pytest
 
@@ -43,6 +43,48 @@ def test_pressure_loss_from_pipe():
     while i < count_exp_pressure_loss:
         assert pressure_loss_from_pipe(expected_pressure_loss[i][0],expected_pressure_loss[i][1],expected_pressure_loss[i][2],expected_pressure_loss[i][3]) == approx(expected_pressure_loss[i][4], abs=expected_pressure_loss[i][5])
         i += 1
+#Test function to check the correct pressure loss from fittings
+def test_test_pressure_loss_from_fittings():
+    expected_pressure_loss = [
+    [0, 3, 0, 0.001],
+    [1.65, 0, 0, 0.001],
+    [1.65, 2, -0.109, 0.001],
+    [1.75, 2, -0.122, 0.001],
+    [1.75, 5, -0.306, 0.001]
+    ]
+    count_expected_pressure_loss = len(expected_pressure_loss)
+    i = 0
+    while i < count_expected_pressure_loss:
+        assert pressure_loss_from_fittings(expected_pressure_loss[i][0], expected_pressure_loss[i][1]) == approx(expected_pressure_loss[i][2], abs=expected_pressure_loss[i][3])
+        i += 1
+#Test function to check the correct Reynollds number
+def test_reynolds_number():
+    expected_reynolds_number = [
+    [0.048692, 0, 0, 1],
+    [0.048692, 1.65, 80069, 1],
+    [0.048692, 1.75, 84922, 1],
+    [0.28687, 1.65, 471729, 1],
+    [0.28687, 1.75, 500318, 1]
+    ]
+    count_expected_reynolds_number = len(expected_reynolds_number)
+    i = 0
+    while i < count_expected_reynolds_number:
+        assert reynolds_number(expected_reynolds_number[i][0], expected_reynolds_number[i][1]) == approx(expected_reynolds_number[i][2], abs=expected_reynolds_number[i][3])
+        i += 1
+#Test function to check the correct pressure loss from pipe reduction
+def test_pressure_loss_from_pipe_reduction():
+    expected_pressure_loss = [
+    [0.28687, 0, 1, 0.048692, 0, 0.001],
+    [0.28687, 1.65, 471729, 0.048692, -163.744, 0.001],
+    [0.28687, 1.75, 500318, 0.048692, -184.182, 0.001]
+    ]
+    count_exp_pressure_loss = len(expected_pressure_loss)
+    i = 0
+    while i < count_exp_pressure_loss:
+        assert pressure_loss_from_pipe_reduction(expected_pressure_loss[i][0],expected_pressure_loss[i][1],expected_pressure_loss[i][2],expected_pressure_loss[i][3]) == approx(expected_pressure_loss[i][4], abs=expected_pressure_loss[i][5])
+        i += 1
+
+
 
 # Call the main function that is part of pytest so that the
 # computer will execute the test functions in this file.
