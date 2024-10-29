@@ -6,19 +6,25 @@ Date: October 26, 2024
 
 """
 from datetime import datetime, timedelta
-import csv
 import random
-
-
 
 def main():
     print("Basic password generator")
     print("This program will help you generate a password that is easy to remember.\n")
 
     nick_name = input("Input your nick name: ")
-    birth_date = input("Input your birthdate (mmddyy): ")
+    try:
+        birth_date = int(input("Input your birthdate (mmddyy): "))
+    except ValueError as val_err:
+        print(f"{val_err} - Incorrect date format entered. Please try again.")
+        quit()
 
-    new_password = generate_password(nick_name, birth_date)
+    bdate = str(birth_date)
+    if len(bdate) != 6:
+        print("Expected number of characters for birthdate is only 6. Please try again.")
+        quit()
+
+    new_password = generate_password(nick_name.lower(), bdate)
     
     print(f"\nYour new password is: {new_password}\n")
 
@@ -28,7 +34,7 @@ def main():
 
     print(f"Note: You need to change your password by {password_change_date:%B %d, %Y}")
 
-    password_storage_file = password_storage(new_password)
+    password_storage_file = password_storage(new_password, date_today)
 
     print(f"Please refer to this file in your local machine for your password storage: {password_storage_file}")
 
@@ -58,7 +64,7 @@ def generate_password(name, date):
     "s": "$",
     "t": "+"
     }
-
+    #Create a list to store the characters from name and birthdate supplied by the user
     new_password_list = []
 
     for letter in name:
@@ -70,7 +76,7 @@ def generate_password(name, date):
     count = len(new_password_list)
 
     for i in range(count):
-        if new_password_list[i] in update_char_dict:
+        if new_password_list[i] in update_char_dict and i != 0:
             new_password_list[i] = update_char_dict[new_password_list[i]]
     
     #find where the first digit of the birthday is and insert a special character
@@ -81,8 +87,8 @@ def generate_password(name, date):
     new_password_list.insert(index, special_char_insert)
     
     new_password_generate = "".join(new_password_list)
-
-    return new_password_generate
+    #capitalize the first character in the newly generated password
+    return new_password_generate.capitalize()
 
 
 def password_change(current_day):
@@ -93,11 +99,11 @@ def password_change(current_day):
 
     Return: a date in this format e.g. January 1, 2025
     """
+    #Use timedelta class to add 3 months to the current date
     change_password_date = current_day + timedelta(days=90)
-
     return change_password_date
 
-def password_storage(new_password):
+def password_storage(new_password, current_day):
     """Appends the newly generated password into the password storage file
 
     Parameters
@@ -105,7 +111,12 @@ def password_storage(new_password):
 
     Return: the name of the password storage file
     """
-    pass
+    filename = "password-storage.txt"
+    # Open the password-storage.txt file for appending text.
+    with open(filename, "at") as pw_storage_file:
+        # Print the new password to the text file.
+        print(f"{new_password} {current_day}", file=pw_storage_file)
+    return filename
 
 # If this file is executed like this:
 # > python password.py
