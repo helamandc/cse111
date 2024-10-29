@@ -17,9 +17,11 @@ def test_password_change():
     update_date = current_date + timedelta(days=90)
     new_pw = password_change(current_date)
     assert new_pw == update_date
+    assert new_pw != " "
 
 def test_password_storage():
     assert password_storage("M@nl3h!123456", current_date) == "password-storage.txt"
+    assert password_storage("M@nl3h!123456", current_date) != " "
 
 # Call the main function that is part of pytest so that the
 # computer will execute the test functions in this file.
